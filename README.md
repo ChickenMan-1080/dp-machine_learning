@@ -1,4 +1,4 @@
-# 🤖 Machine Leaning App
+# 🤖 Machine Learning App
 
 ## **note :** !This is not my app i just use this template to make my project easier
 
@@ -7,7 +7,7 @@ Description of the app ...
 
 ## Demo App
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://app-starter-kit.streamlit.app/)
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://dp-machine_learnning.streamlit.app/)
 
 ## GitHub Codespaces
 
