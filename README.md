@@ -1,7 +1,7 @@
-# 📦 Streamlit App Starter Kit 
-```
-⬆️ (Replace above with your app's name)
-```
+# 🤖 Machine Leaning App
+
+## **note :** !This is not my app i just use this template to make my project easier
+
 
 Description of the app ...
 
