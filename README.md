@@ -7,7 +7,7 @@ Description of the app ...
 
 ## Demo App
 
-[Demo](https://machine-learning-app-1080.streamlit.app/)
+[Demo]([https://machine-learning-app-1080.streamlit.app/](https://github.com/codespaces/badge.svg)](https://codespaces.new/streamlit/app-starter-kit?quickstart=1))
 
 ## GitHub Codespaces
 
