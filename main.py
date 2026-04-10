@@ -20,8 +20,8 @@ with st.expander('Data'):
     X_raw
 
     st.write('**y**')
-    y_raw = df.species #เลือก column species มาขึ้นตาราง
-    y_raw
+    y = df.species #เลือก column species มาขึ้นตาราง
+    y
 
 with st.expander("Data Visualization"):
     st.scatter_chart(
@@ -30,8 +30,7 @@ with st.expander("Data Visualization"):
         y='body_mass_g',
         color='species'
     )  
-    
-#Data Preparation
+   
 #context manager (with statement)
 with st.sidebar: #ควบคุมตัวแปร x ทั้งหมด
     st.header("Input Feature")
@@ -46,36 +45,40 @@ with st.sidebar: #ควบคุมตัวแปร x ทั้งหมด
     # Create DataFrame for the in put Features
     #จริงๆไม่ต้อง TAB มาอยู่ sidebar ก็ได้เพราะมัน เป็น Global variable แค่ทำให้รู้ว่าทำได้
     data ={
-        'island':island,
-        'bill_length_mm' : bill_lenght,
-        'bill_depth_mm' : bill_dept,
-        'flipper_length_mm' : flipper_length,
-        'body_mass_g' : body_mass,
-        'sex' : sex_v
-    }
+        'island':island, #island contain value that user select
+        'bill_length_mm' : bill_lenght, #same as above
+        'bill_depth_mm' : bill_dept, #same as above
+        'flipper_length_mm' : flipper_length, #same as above
+        'body_mass_g' : body_mass, #same as above
+        'sex' : sex_v #same as above
+    } #contain value in each column in dic data 
     
 
-inp_data = pd.DataFrame(data , index = [0])    
+inp_data = pd.DataFrame(data , index = [0])    # create a dataframe for input data
 #inp_data #แสดงผลบน sidebar 💀
-inp_penguins = pd.concat([inp_data , X_raw], axis=0)
+inp_data_and_Xraw = pd.concat([inp_data , X_raw], axis=0) #combined inp_data and X_raw
 
 with st.expander("Data and Data Combined"):
     st.write('**Interactive Data')
     inp_data
     st.write('**Combined Data X**')
-    inp_penguins
+    inp_data_and_Xraw
+
+
+#Data Preparation
 
 #enconding X
 encode = ['island','sex'] #กำหนด column ที่ต้อง encode object -> numeric
-df_encoded = pd.get_dummies(inp_penguins,prefix=encode) #one hot encoding
+df_encoded_X = pd.get_dummies(inp_data_and_Xraw,prefix=encode) #one hot encoding
 #Tips ถ้าทำ ตัวแปรมีเยอะเสี่ยง multicolinearity ถ้าเรามีตัว 'cooked' , 'cooking' , 'dead' หาก 0,0 แปลว่า 'dead' = 1 ดังนั้นเราสามารถลบออกได้ 1 column เพื่อลดความซับซ้อนของข้อมูล (งงๆ แต่เก็บไว้เป็น concept) 
 #df_penguins.head(3)#ใช้ได้แต่ไม่ขึ้น streamlit
 #df_encoded[:5:] #work on streamlit
 
-with st.expander('Encoded'):
-    st.write('**Encoded Data Frame**')
-    df_encoded[:5:] 
-    
+
+X_D = df_encoded_X[1::] #To be honest idk why the youtuber i watched do this 
+#My idea is encoding only clean dataframe and fit the model i have no idea why he concat input data and df
+# then ignore input data so it can fit the model , it basiclly df that we use pd.read_csv from the start 
+#This is might sound confused but maybe he has a reason i'm just yapping sorry
     
 #Encoding y
 target_mapper = {
@@ -86,5 +89,85 @@ target_mapper = {
 def target_encode(val): #val = value
     return target_mapper[val] 
     
-y = y_raw.apply(target_encode)
-y
+encoded_y = y.apply(target_encode)
+
+with st.expander('Data Preparation'): #inp_data_for_prediction
+    st.write('**Encoded X (input data)')
+    df_encoded_X
+    st.write('**Encoded y')
+    encoded_y
+    
+#Model Training and inference
+#using random forest algorithm for train model
+
+from sklearn.ensemble import RandomForestClassifier
+
+clf = RandomForestClassifier()        #clf = classification
+clf.fit(X_D,y)
+
+# Apply model to make prediction
+prediction = clf.predict(df_encoded_X[:1:]) #From line 78 maybe this reason why but he use variable but f it    i'll just select column instend
+prediction_probs = clf.predict_proba(df_encoded_X[:1:]) #look prob all y
+
+df_prediction_probs = pd.DataFrame(prediction_probs)
+
+
+#df_prediction_probs.columns = ['Adelie','Chinstrap','Gentoo']
+#df_prediction_probs.rename(
+#    columns={
+#        0:'Adelie',
+#        1:'Chinstrap',
+#        2:'Gentoo'
+#    }
+#) 
+
+# This also work to change columns name but it's confused me so fxing much
+# So i'll do what i understand like below
+
+
+df_prediction_probs.rename(
+    columns={
+        0:'Adelie',
+        1:'Chinstrap',
+        2:'Gentoo'
+    },
+    inplace=True
+)
+
+
+#Display predicted species
+
+import numpy as np
+
+st.subheader('Predicted species')
+
+st.dataframe(
+    df_prediction_probs,
+    column_config={ #column_config here is a keyword 
+        'Adelie': st.column_config.ProgressColumn( #column_config here is a attribute access 
+            'Adelie',
+            format='%f',
+            min_value=0,
+            max_value=1
+        ),
+        'Chinstrap': st.column_config.ProgressColumn(
+            'Chinstrap',
+            format='%f',
+            min_value=0,
+            max_value=1
+        ),
+        'Gentoo': st.column_config.ProgressColumn(
+            'Gentoo',
+            format='%f',
+            min_value=0,
+            max_value=1
+        )   
+    },
+    hide_index=True # hide first index i mean the annoying one 
+)
+
+
+
+penguin_species = np.array(['Adelie','Chinstrap','Gentoo']) #สร้าง numpy array แปลง list ให้เป็น numpy array
+#st.success(str(penguin_species[prediction][0])) #error string array
+st.success(prediction[0])
