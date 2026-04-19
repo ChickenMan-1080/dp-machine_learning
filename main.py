@@ -103,7 +103,7 @@ clf = RandomForestClassifier()        #clf = classification
 clf.fit(X_D,y)
 
 # Apply model to make prediction
-prediction = clf.predict(df_encoded_X[:1:]) #From line 78 maybe this reason why but he use variable but f it    i'll just select column instend
+prediction = clf.predict(df_encoded_X[:1:]) #line 78 
 prediction_probs = clf.predict_proba(df_encoded_X[:1:]) #look prob all y
 
 df_prediction_probs = pd.DataFrame(prediction_probs)
