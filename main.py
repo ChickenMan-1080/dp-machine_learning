@@ -75,10 +75,7 @@ df_encoded_X = pd.get_dummies(inp_data_and_Xraw,prefix=encode) #one hot encoding
 #df_encoded[:5:] #work on streamlit
 
 
-X_D = df_encoded_X[1::] #To be honest idk why the youtuber i watched do this 
-#My idea is encoding only clean dataframe and fit the model i have no idea why he concat input data and df
-# then ignore input data so it can fit the model , it basiclly df that we use pd.read_csv from the start 
-#This is might sound confused but maybe he has a reason i'm just yapping sorry
+X_D = df_encoded_X[1::] 
     
 #Encoding y
 target_mapper = {
