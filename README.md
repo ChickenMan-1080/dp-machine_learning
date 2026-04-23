@@ -1,9 +1,7 @@
 # 🤖 Machine Learning App
 
-## **note :** !This is not my app i just use this template to make my project easier
+## **note :** !This is for practice train model and web app
 
-
-Description of the app ...
 
 ## Demo App
 
